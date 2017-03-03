@@ -1,0 +1,19 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "root": true,
+  "rules": {
+    "newline-before-return": ["error"],
+    "newline-after-var": ["error", "always"],
+    "comma-dangle": ["error", "never"],
+    "promise/always-return": 0
+  },
+  "extends": [
+    "plugin:shopify/esnext"
+  ],
+  "globals": {
+    "fetch": true
+  }
+}

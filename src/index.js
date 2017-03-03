@@ -1,131 +1,171 @@
 const {parse, visit} = require('graphql/language');
-const parseArgs = require('./parse-args');
-const parseVariables = require ('./parse-variables');
+const t = require('babel-types');
+const parseArg = require('./parse-arg');
+const parseVariables = require('./parse-variables');
 
-function buildFieldOrInlineFragment(node, parentSelections, queryBuilderStrings) {
-  if (node.arguments && node.arguments.length) {
-    queryBuilderStrings.push(', {args: {');
-    const argStrings = [];
-    node.arguments.forEach((arg) => {
-      argStrings.push(parseArgs(arg));
-    });
-    queryBuilderStrings.push(argStrings.join(', '));
-    queryBuilderStrings.push('}}');
-  }
+// Returns an array of the body of the arrow function
+function getSelections(selectionSet, parentSelections) {
+  const selections = [];
 
-  if (node.selectionSet) {
-    const name = node.name ? node.name.value : node.typeCondition.name.value;
-    queryBuilderStrings.push(`, (${name}) => {\n`);
-    parentSelections.push(name);
-  } else {
-    queryBuilderStrings.push(');\n');
-  }
+  selectionSet.selections.forEach((selection) => {
+    let name;
+    let addOperation;
+
+    if (selection.kind === 'Field') {
+      name = selection.name.value;
+      addOperation = t.identifier('add');
+    } else if (selection.kind === 'InlineFragment') {
+      name = selection.typeCondition.name.value;
+      addOperation = t.identifier('addInlineFragmentOn');
+    } else {
+      // FragmentSpread
+    }
+
+    const args = [t.stringLiteral(name)];
+
+    if (selection.arguments && selection.arguments.length) {
+      const graphQLArgs = [];
+
+      selection.arguments.forEach((argument) => {
+        graphQLArgs.push(parseArg(argument));
+      });
+
+      args.push(t.objectExpression([t.objectProperty(t.identifier('args'), t.objectExpression(graphQLArgs))]));
+    }
+
+    if (selection.selectionSet) {
+      parentSelections.push(name);
+      args.push(t.arrowFunctionExpression([t.identifier(name)], t.blockStatement(getSelections(selection.selectionSet, parentSelections))));
+      parentSelections.pop();
+    }
+
+    const parentSelection = parentSelections[parentSelections.length - 1];
+
+    selections.push(t.expressionStatement(
+      t.callExpression(
+        t.memberExpression(
+          t.identifier(parentSelection),
+          addOperation
+        ),
+        args
+      )
+    ));
+  });
+
+  return selections;
 }
 
-function visitFields(document, queryBuilderStrings) {
-  const parentSelections = ['root'];
+function parseDocument(document, documentId) {
+  console.log(document);
+  const queryCode = [];
 
   visit(document, {
-    "InlineFragment": {
+    OperationDefinition: {
       enter(node) {
-        console.log(node);
-        const parentSelection = parentSelections[parentSelections.length - 1];
-        queryBuilderStrings.push(`${parentSelection}.addInlineFragmentOn('${node.typeCondition.name.value}'`);
-        buildFieldOrInlineFragment(node, parentSelections, queryBuilderStrings);
-      },
-      leave(node) {
-        if (node.selectionSet) {
-          queryBuilderStrings.push('});\n');
-          parentSelections.pop();
+        const parentSelections = ['root'];
+        const args = [];
+
+        if (node.name) {
+          args.push(t.stringLiteral(node.name.value));
         }
+
+        if (node.variableDefinitions && node.variableDefinitions.length) {
+          args.push(parseVariables(node.variableDefinitions));
+        }
+
+        args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections))));
+
+        let operationId;
+
+        if (node.operation === 'query') {
+          operationId = 'addQuery';
+        } else {
+          operationId = 'addMutation';
+        }
+
+        queryCode.push(t.callExpression(
+          t.memberExpression(
+            documentId,
+            t.identifier(operationId)
+          ),
+          args
+        ));
       }
     },
-    "Field": {
+    FragmentDefinition: {
       enter(node) {
-        console.log(node);
-        const parentSelection = parentSelections[parentSelections.length - 1];
-        queryBuilderStrings.push(`${parentSelection}.add('${node.name.value}'`);
-        buildFieldOrInlineFragment(node, parentSelections, queryBuilderStrings);
-      },
-      leave(node) {
-        if (node.selectionSet) {
-          queryBuilderStrings.push('});\n');
-          parentSelections.pop();
+        // this is very incomplete
+        const parentSelections = ['root'];
+        const args = [];
+
+        if (node.name) {
+          args.push(t.stringLiteral(node.name.value));
         }
+
+        if (node.variableDefinitions && node.variableDefinitions.length) {
+          args.push(parseVariables(node.variableDefinitions));
+        }
+
+        args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections))));
+
+        queryCode.push(t.callExpression(
+          t.memberExpression(
+            documentId,
+            t.identifier('defineFragment')
+          ),
+          args
+        ));
       }
     }
   });
-}
 
-function parseDocument(document) {
-  console.log(document);
-  const queryBuilderStrings = [];
-
-  // For now, we assume the graphQLClient is called `client`
-
-  const definitions = document.definitions;
-
-  // Go through the definitions
-  if (definitions.length > 1) {
-    queryBuilderStrings.push('client.document()');
-    definitions.forEach((definition) => {
-      const name = definition.name ? `'${definition.name.value}', ` : '';
-      const variables = definition.variableDefinitions && definition.variableDefinitions.length ? `${parseVariables(definition.variableDefinitions)}, ` : '';
-
-      // Add each query/mutation
-      if (definition.operation === 'query') {
-        queryBuilderStrings.push(`.addQuery(${name}${variables}(root) => {`);
-      } else {
-        queryBuilderStrings.push(`.addMutation(${name}${variables}(root) => {`);
-      }
-
-      visitFields(definition, queryBuilderStrings);
-
-      queryBuilderStrings.push('})');
-    });
-  } else {
-    const name = definitions[0].name ? `'${definitions[0].name.value}', ` : '';
-    const variables = definitions[0].variableDefinitions && definitions[0].variableDefinitions.length ? `${parseVariables(definitions[0].variableDefinitions)}, ` : '';
-
-    if (definitions[0].operation === 'query') {
-      queryBuilderStrings.push(`client.query(${name}${variables}(root) => {\n`);
-    } else {
-      queryBuilderStrings.push(`client.mutation(${name}${variables}(root) => {\n`);
-    }
-
-    visitFields(document, queryBuilderStrings);
-
-    queryBuilderStrings.push('})');
-  }
-
-
-  return queryBuilderStrings.join('');
+  return queryCode;
 }
 
 const templateElementVisitor = {
   TemplateElement(path) {
-    const document = parse(path.node.value.raw);
-    const queryCode = parseDocument(document);
-    console.log(queryCode);
+    const statementParentPath = path.getStatementParent();
+    const documentId = statementParentPath.scope.generateUidIdentifier('document');
 
-    // go back up the tree and replace the entire tagged template expression
-    const parentPath = path.findParent((path) => path.isTaggedTemplateExpression());
+    statementParentPath.insertBefore(t.variableDeclaration(
+      'const',
+      [t.variableDeclarator(
+        documentId,
+        t.callExpression(
+          t.memberExpression(
+            t.identifier('client'),
+            t.identifier('document')
+          ),
+          []
+        )
+      )]
+    ));
+
+    const document = parse(path.node.value.raw);
+
+    // should be an array of objects from the builder
+    const queryCode = parseDocument(document, documentId);
+
+    // really bad placeholder code
+    statementParentPath.insertBefore(queryCode);
+
     try {
-      parentPath.replaceWithSourceString(queryCode);
-    } catch (e) {
-      throw Error(e.message);
+      this.parentPath.replaceWith(documentId);
+    } catch (error) {
+      throw Error(error.message);
     }
   }
 };
 
-module.exports = function({types: t}) {
+module.exports = function() {
   return {
     visitor: {
       TaggedTemplateExpression(path) {
-        if(path.node.tag.name === 'gql') {
-          path.traverse(templateElementVisitor);
+        console.log(path.node);
+        if (path.node.tag.name === 'gql') {
+          path.traverse(templateElementVisitor, {parentPath: path});
         }
       }
     }
-  }
-}
+  };
+};

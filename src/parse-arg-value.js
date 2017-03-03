@@ -1,9 +1,15 @@
+const t = require('babel-types');
+
 module.exports = function parseArgValue(argValue) {
   if (argValue.kind === 'StringValue') {
-    return `"${argValue.value}"`;
+    return t.stringLiteral(argValue.value);
   } else if (argValue.kind === 'EnumValue') {
-    return `_enum('${argValue.value}')`;
+    return t.callExpression(t.identifier('_enum'), [t.stringLiteral(argValue.value)]);
+  } else if (argValue.kind === 'IntValue') {
+    return t.numericLiteral(parseInt(argValue.value, 10));
+  } else if (argValue.kind === 'BooleanValue') {
+    return t.booleanLiteral(argValue.value);
   } else {
-    return `${argValue.value}`;
+    throw Error(`Unrecognized type ${argValue.kind}`);
   }
-}
+};

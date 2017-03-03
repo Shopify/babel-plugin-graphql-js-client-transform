@@ -1,3 +1,5 @@
+const t = require('babel-types');
+
 const parseArgValue = require('./parse-arg-value');
 
 function extractVariableType(variable) {
@@ -5,14 +7,19 @@ function extractVariableType(variable) {
 }
 
 module.exports = function parseVariables(variableDefinitions) {
-  const variableStrings = [];
+  const variables = [];
   // something like [variable('a', 'Int'), variable('b', 'ID!'), variable('c', 'Int', 3)]
 
 
   variableDefinitions.forEach((variable) => {
-    const variableDefaultValue = variable.defaultValue ? `, ${parseArgValue(variable.defaultValue)}` : ''
-    variableStrings.push(`variable('${variable.variable.name.value}', '${extractVariableType(variable)}'${variableDefaultValue})`);
+    const args = [t.stringLiteral(variable.variable.name.value), t.stringLiteral(extractVariableType(variable))];
+
+    if (variable.defaultValue) {
+      args.push(parseArgValue(variable.defaultValue));
+    }
+
+    variables.push(t.callExpression(t.identifier('variable'), args));
   });
 
-  return `[${variableStrings.join(', ')}]`;
-}
+  return t.arrayExpression(variables);
+};
