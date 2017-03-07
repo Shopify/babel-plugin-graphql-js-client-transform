@@ -3,12 +3,13 @@ const t = require('babel-types');
 const parseArg = require('./parse-arg');
 const parseVariables = require('./parse-variables');
 
-// Returns an array of the body of the arrow function
-function getSelections(selectionSet, parentSelections) {
+// Returns the body of the block statement representing the selections
+function getSelections(selectionSet, parentSelections, spreadsId) {
   const selections = [];
 
   selectionSet.selections.forEach((selection) => {
     let name;
+    let spreadVariable;
     let addOperation;
 
     if (selection.kind === 'Field') {
@@ -18,11 +19,19 @@ function getSelections(selectionSet, parentSelections) {
       name = selection.typeCondition.name.value;
       addOperation = t.identifier('addInlineFragmentOn');
     } else {
-      // FragmentSpread
+      addOperation = t.identifier('addFragment');
+      spreadVariable = t.memberExpression(spreadsId, t.identifier(selection.name.value));
     }
 
-    const args = [t.stringLiteral(name)];
+    const args = name ? [t.stringLiteral(name)] : [spreadVariable];
+    const options = [];
 
+    // Add alias to the query
+    if (selection.alias) {
+      options.push(t.objectProperty(t.identifier('alias'), t.stringLiteral(selection.alias.value)));
+    }
+
+    // Add arguments to the query
     if (selection.arguments && selection.arguments.length) {
       const graphQLArgs = [];
 
@@ -30,12 +39,17 @@ function getSelections(selectionSet, parentSelections) {
         graphQLArgs.push(parseArg(argument));
       });
 
-      args.push(t.objectExpression([t.objectProperty(t.identifier('args'), t.objectExpression(graphQLArgs))]));
+      options.push(t.objectProperty(t.identifier('args'), t.objectExpression(graphQLArgs)));
+    }
+
+    // Add query options (i.e. alias and arguments) to the query
+    if (options.length) {
+      args.push(t.objectExpression(options));
     }
 
     if (selection.selectionSet) {
       parentSelections.push(name);
-      args.push(t.arrowFunctionExpression([t.identifier(name)], t.blockStatement(getSelections(selection.selectionSet, parentSelections))));
+      args.push(t.arrowFunctionExpression([t.identifier(name)], t.blockStatement(getSelections(selection.selectionSet, parentSelections, spreadsId))));
       parentSelections.pop();
     }
 
@@ -55,67 +69,133 @@ function getSelections(selectionSet, parentSelections) {
   return selections;
 }
 
-function parseDocument(document, documentId) {
-  console.log(document);
+
+function hasFragments(document) {
+  return document.definitions.some((definition) => {
+    return definition.kind === 'FragmentDefinition';
+  });
+}
+
+function visitFragment(fragment, fragments, fragmentsHash) {
+  if (fragment.marked) {
+    throw Error('Fragments cannot contain a cycle');
+  }
+  if (!fragment.visited) {
+    fragment.marked = true;
+    // Visit every spread in this fragment definition
+    visit(fragment, {
+      FragmentSpread(node) {
+        // Visit the corresponding fragment definition
+        visitFragment(fragmentsHash[node.name.value], fragments, fragmentsHash);
+      }
+    });
+    fragment.visited = true;
+    fragment.marked = false;
+    fragments.push(fragment);
+  }
+}
+
+function sortDefinitions(definitions) {
+  const fragments = definitions.filter((definition) => {
+    return definition.kind === 'FragmentDefinition';
+  });
+
+  // Set up a hash for quick lookup
+  const fragmentsHash = {};
+
+  fragments.forEach((fragment) => {
+    fragmentsHash[fragment.name.value] = fragment;
+  });
+
+  const operations = definitions.filter((definition) => {
+    return definition.kind === 'OperationDefinition';
+  });
+
+  const sortedFragments = [];
+
+  fragments.forEach((fragment) => {
+    if (!fragment.visited) {
+      visitFragment(fragment, sortedFragments, fragmentsHash);
+    }
+  });
+
+  return sortedFragments.concat(operations);
+}
+
+// Goes through the document, parsing each OperationDefinition (i.e. query/mutation) and FragmentDefinition
+function parseDocument(document, documentId, parentScope) {
   const queryCode = [];
+  let spreadsId;
+
+  document.definitions = sortDefinitions(document.definitions);
+
+  // Create an empty object to store the spreads if the document has fragments
+  if (document.definitions.length && document.definitions[0].kind === 'FragmentDefinition') {
+    spreadsId = parentScope.generateUidIdentifier('spreads');
+
+    queryCode.push(t.variableDeclaration(
+      'const',
+      [t.variableDeclarator(
+        spreadsId,
+        t.objectExpression([])
+      )]
+    ));
+  }
 
   visit(document, {
-    OperationDefinition: {
-      enter(node) {
-        const parentSelections = ['root'];
-        const args = [];
+    FragmentDefinition(node) {
+      const parentSelections = ['root'];
+      // Fragments are always named
+      const args = [t.stringLiteral(node.name.value), t.stringLiteral(node.typeCondition.name.value)];
 
-        if (node.name) {
-          args.push(t.stringLiteral(node.name.value));
-        }
+      args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections, spreadsId))));
 
-        if (node.variableDefinitions && node.variableDefinitions.length) {
-          args.push(parseVariables(node.variableDefinitions));
-        }
-
-        args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections))));
-
-        let operationId;
-
-        if (node.operation === 'query') {
-          operationId = 'addQuery';
-        } else {
-          operationId = 'addMutation';
-        }
-
-        queryCode.push(t.callExpression(
+      queryCode.push(t.expressionStatement(
+        t.assignmentExpression(
+          '=',
           t.memberExpression(
-            documentId,
-            t.identifier(operationId)
+            spreadsId,
+            t.identifier(node.name.value)
           ),
-          args
-        ));
-      }
+          t.callExpression(
+            t.memberExpression(
+              documentId,
+              t.identifier('defineFragment')
+            ),
+            args
+          )
+        )
+      ));
     },
-    FragmentDefinition: {
-      enter(node) {
-        // this is very incomplete
-        const parentSelections = ['root'];
-        const args = [];
+    OperationDefinition(node) {
+      const parentSelections = ['root'];
+      const args = [];
 
-        if (node.name) {
-          args.push(t.stringLiteral(node.name.value));
-        }
-
-        if (node.variableDefinitions && node.variableDefinitions.length) {
-          args.push(parseVariables(node.variableDefinitions));
-        }
-
-        args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections))));
-
-        queryCode.push(t.callExpression(
-          t.memberExpression(
-            documentId,
-            t.identifier('defineFragment')
-          ),
-          args
-        ));
+      if (node.name) {
+        args.push(t.stringLiteral(node.name.value));
       }
+
+      if (node.variableDefinitions && node.variableDefinitions.length) {
+        args.push(parseVariables(node.variableDefinitions));
+      }
+
+      args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections, spreadsId))));
+
+      let operationId;
+
+      if (node.operation === 'query') {
+        operationId = 'addQuery';
+      } else {
+        operationId = 'addMutation';
+      }
+
+      queryCode.push(t.callExpression(
+        t.memberExpression(
+          documentId,
+          t.identifier(operationId)
+        ),
+        args
+      ));
     }
   });
 
@@ -127,6 +207,7 @@ const templateElementVisitor = {
     const statementParentPath = path.getStatementParent();
     const documentId = statementParentPath.scope.generateUidIdentifier('document');
 
+    // Create the document to be sent
     statementParentPath.insertBefore(t.variableDeclaration(
       'const',
       [t.variableDeclarator(
@@ -143,10 +224,8 @@ const templateElementVisitor = {
 
     const document = parse(path.node.value.raw);
 
-    // should be an array of objects from the builder
-    const queryCode = parseDocument(document, documentId);
+    const queryCode = parseDocument(document, documentId, statementParentPath.scope);
 
-    // really bad placeholder code
     statementParentPath.insertBefore(queryCode);
 
     try {
@@ -161,7 +240,6 @@ module.exports = function() {
   return {
     visitor: {
       TaggedTemplateExpression(path) {
-        console.log(path.node);
         if (path.node.tag.name === 'gql') {
           path.traverse(templateElementVisitor, {parentPath: path});
         }
