@@ -1,7 +1,7 @@
 const {parse, visit} = require('graphql/language');
 const t = require('babel-types');
 const parseArg = require('./parse-arg');
-const parseVariables = require('./parse-variables');
+const parseVariable = require('./parse-variable');
 
 // Returns the body of the block statement representing the selections
 function getSelections(selectionSet, parentSelections, spreadsId) {
@@ -175,8 +175,14 @@ function parseDocument(document, documentId, parentScope) {
         args.push(t.stringLiteral(node.name.value));
       }
 
-      if (node.variableDefinitions && node.variableDefinitions.length) {
-        args.push(parseVariables(node.variableDefinitions));
+      if (node.variableDefinitions) {
+        const variables = [];
+
+        node.variableDefinitions.forEach((variable) => {
+          variables.push(parseVariable(variable));
+        });
+
+        args.push(t.arrayExpression(variables));
       }
 
       args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections, spreadsId))));

@@ -1,11 +1,11 @@
 {
-  "name": "babel-plugin-graphql-transform",
+  "name": "@shopify/babel-plugin-graphql-transform",
   "version": "0.0.1",
-  "description": "",
+  "description": "Babel plugin for transforming raw GraphQL queries into @shopify/graphql-js-client's query builder syntax",
   "main": "index.js",
   "scripts": {
-    "test": "echo 'no' && exit 1",
-    "lint": "eslint --max-warnings 0 src/ test/"
+    "test": "mocha -u tdd",
+    "lint": "eslint --max-warnings 0 -c .eslintrc.json src/ test/"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +13,8 @@
     "babel-types": "6.23.0",
     "eslint": "3.16.1",
     "eslint-plugin-shopify": "15.1.1",
-    "graphql": "0.9.1"
+    "graphql": "0.9.1",
+    "mocha": "3.2.0"
   },
   "dependencies": {}
 }
