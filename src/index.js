@@ -7,6 +7,7 @@ const parseVariables = require('./parse-variables');
 function getSelections(selectionSet, parentSelections, spreadsId) {
   const selections = [];
 
+  // Add each selection onto the parentSelection
   selectionSet.selections.forEach((selection) => {
     let name;
     let spreadVariable;
@@ -47,6 +48,7 @@ function getSelections(selectionSet, parentSelections, spreadsId) {
       args.push(t.objectExpression(options));
     }
 
+    // Add any selections on this selection
     if (selection.selectionSet) {
       parentSelections.push(name);
       args.push(t.arrowFunctionExpression([t.identifier(name)], t.blockStatement(getSelections(selection.selectionSet, parentSelections, spreadsId))));
@@ -69,13 +71,7 @@ function getSelections(selectionSet, parentSelections, spreadsId) {
   return selections;
 }
 
-
-function hasFragments(document) {
-  return document.definitions.some((definition) => {
-    return definition.kind === 'FragmentDefinition';
-  });
-}
-
+// Recursive helper function for sortDefinitions
 function visitFragment(fragment, fragments, fragmentsHash) {
   if (fragment.marked) {
     throw Error('Fragments cannot contain a cycle');
@@ -95,6 +91,9 @@ function visitFragment(fragment, fragments, fragmentsHash) {
   }
 }
 
+
+// Sorts the definitions such that all fragment definitions are before operations definitions and fragments definitions
+// are in reverse topological order
 function sortDefinitions(definitions) {
   const fragments = definitions.filter((definition) => {
     return definition.kind === 'FragmentDefinition';
@@ -123,6 +122,7 @@ function sortDefinitions(definitions) {
 }
 
 // Goes through the document, parsing each OperationDefinition (i.e. query/mutation) and FragmentDefinition
+// and returns the resulting query builder code
 function parseDocument(document, documentId, parentScope) {
   const queryCode = [];
   let spreadsId;
@@ -222,6 +222,7 @@ const templateElementVisitor = {
       )]
     ));
 
+    // Parse the document into a GraphQL AST
     const document = parse(path.node.value.raw);
 
     const queryCode = parseDocument(document, documentId, statementParentPath.scope);
