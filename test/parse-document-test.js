@@ -8,7 +8,7 @@ suite('parse-document-test', () => {
   const parentScope = {
     generateUidIdentifier() {
       return spreadsId;
-    },
+    }
   };
   const documentId = t.identifier('_document');
 
@@ -17,20 +17,20 @@ suite('parse-document-test', () => {
       'const',
       [t.variableDeclarator(
         spreadsId,
-        t.objectExpression([]),
-      )],
+        t.objectExpression([])
+      )]
     ),
     t.expressionStatement(
       t.assignmentExpression(
         '=',
         t.memberExpression(
           spreadsId,
-          t.identifier('productFragment'),
+          t.identifier('productFragment')
         ),
         t.callExpression(
           t.memberExpression(
             documentId,
-            t.identifier('defineFragment'),
+            t.identifier('defineFragment')
           ),
           [
             t.stringLiteral('productFragment'),
@@ -42,24 +42,24 @@ suite('parse-document-test', () => {
                   t.callExpression(
                     t.memberExpression(
                       t.identifier('root'),
-                      t.identifier('add'),
+                      t.identifier('add')
                     ),
-                    [t.stringLiteral('title')],
-                  ),
-                ),
-              ]),
-            ),
-          ],
-        ),
-      ),
-    ),
+                    [t.stringLiteral('title')]
+                  )
+                )
+              ])
+            )
+          ]
+        )
+      )
+    )
   ];
 
   const queryDefinitionNodes = [
     t.callExpression(
       t.memberExpression(
         documentId,
-        t.identifier('addQuery'),
+        t.identifier('addQuery')
       ),
       [
         t.arrowFunctionExpression([t.identifier('root')],
@@ -68,15 +68,15 @@ suite('parse-document-test', () => {
               t.callExpression(
                 t.memberExpression(
                   t.identifier('root'),
-                  t.identifier('add'),
+                  t.identifier('add')
                 ),
-                [t.stringLiteral('field')],
-              ),
-            ),
-          ]),
-        ),
-      ],
-    ),
+                [t.stringLiteral('field')]
+              )
+            )
+          ])
+        )
+      ]
+    )
   ];
 
   test('it can add fragment definitions', () => {
@@ -100,7 +100,7 @@ suite('parse-document-test', () => {
       t.callExpression(
         t.memberExpression(
           documentId,
-          t.identifier('addMutation'),
+          t.identifier('addMutation')
         ),
         [
           t.arrowFunctionExpression(
@@ -110,7 +110,7 @@ suite('parse-document-test', () => {
                 t.callExpression(
                   t.memberExpression(
                     t.identifier('root'),
-                    t.identifier('add'),
+                    t.identifier('add')
                   ),
                   [
                     t.stringLiteral('mutateSomething'),
@@ -123,12 +123,12 @@ suite('parse-document-test', () => {
                             t.objectExpression([
                               t.objectProperty(
                                 t.identifier('token'),
-                                t.stringLiteral('abc'),
-                              ),
-                            ]),
-                          ),
-                        ]),
-                      ),
+                                t.stringLiteral('abc')
+                              )
+                            ])
+                          )
+                        ])
+                      )
                     ]),
                     t.arrowFunctionExpression(
                       [t.identifier('mutateSomething')],
@@ -137,20 +137,20 @@ suite('parse-document-test', () => {
                           t.callExpression(
                             t.memberExpression(
                               t.identifier('mutateSomething'),
-                              t.identifier('add'),
+                              t.identifier('add')
                             ),
-                            [t.stringLiteral('field2')],
-                          ),
-                        ),
-                      ]),
-                    ),
-                  ],
-                ),
-              ),
-            ]),
-          ),
-        ],
-      ),
+                            [t.stringLiteral('field2')]
+                          )
+                        )
+                      ])
+                    )
+                  ]
+                )
+              )
+            ])
+          )
+        ]
+      )
     ];
 
     assert.deepEqual(babelAstNodes, expectedBabelAstNodes);
@@ -163,7 +163,7 @@ suite('parse-document-test', () => {
       t.callExpression(
         t.memberExpression(
           documentId,
-          t.identifier('addQuery'),
+          t.identifier('addQuery')
         ),
         [
           t.stringLiteral('myQuery'),
@@ -173,15 +173,15 @@ suite('parse-document-test', () => {
                 t.callExpression(
                   t.memberExpression(
                     t.identifier('root'),
-                    t.identifier('add'),
+                    t.identifier('add')
                   ),
-                  [t.stringLiteral('field')],
-                ),
-              ),
-            ]),
-          ),
-        ],
-      ),
+                  [t.stringLiteral('field')]
+                )
+              )
+            ])
+          )
+        ]
+      )
     ];
 
     assert.deepEqual(babelAstNodes, expectedBabelAstNodes);
@@ -194,11 +194,11 @@ suite('parse-document-test', () => {
       t.callExpression(
         t.memberExpression(
           documentId,
-          t.identifier('addQuery'),
+          t.identifier('addQuery')
         ),
         [
           t.arrayExpression([
-            t.callExpression(t.identifier('variable'), [t.stringLiteral('id'), t.stringLiteral('ID')]),
+            t.callExpression(t.identifier('variable'), [t.stringLiteral('id'), t.stringLiteral('ID')])
           ]),
           t.arrowFunctionExpression(
             [t.identifier('root')],
@@ -207,7 +207,7 @@ suite('parse-document-test', () => {
                 t.callExpression(
                   t.memberExpression(
                     t.identifier('root'),
-                    t.identifier('add'),
+                    t.identifier('add')
                   ),
                   [
                     t.stringLiteral('node'),
@@ -217,10 +217,10 @@ suite('parse-document-test', () => {
                         t.objectExpression([
                           t.objectProperty(
                             t.identifier('id'),
-                            t.callExpression(t.identifier('variable'), [t.stringLiteral('id')]),
-                          ),
-                        ]),
-                      ),
+                            t.callExpression(t.identifier('variable'), [t.stringLiteral('id')])
+                          )
+                        ])
+                      )
                     ]),
                     t.arrowFunctionExpression(
                       [t.identifier('node')],
@@ -229,20 +229,20 @@ suite('parse-document-test', () => {
                           t.callExpression(
                             t.memberExpression(
                               t.identifier('node'),
-                              t.identifier('add'),
+                              t.identifier('add')
                             ),
-                            [t.stringLiteral('id')],
-                          ),
-                        ),
-                      ]),
-                    ),
-                  ],
-                ),
-              ),
-            ]),
-          ),
-        ],
-      ),
+                            [t.stringLiteral('id')]
+                          )
+                        )
+                      ])
+                    )
+                  ]
+                )
+              )
+            ])
+          )
+        ]
+      )
     ];
 
     assert.deepEqual(babelAstNodes, expectedBabelAstNodes);

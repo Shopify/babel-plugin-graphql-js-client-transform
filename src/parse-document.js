@@ -20,8 +20,8 @@ export default function parseDocument(document, documentId, parentScope) {
       'const',
       [t.variableDeclarator(
         spreadsId,
-        t.objectExpression([]),
-      )],
+        t.objectExpression([])
+      )]
     ));
   }
 
@@ -38,16 +38,16 @@ export default function parseDocument(document, documentId, parentScope) {
           '=',
           t.memberExpression(
             spreadsId,
-            t.identifier(node.name.value),
+            t.identifier(node.name.value)
           ),
           t.callExpression(
             t.memberExpression(
               documentId,
-              t.identifier('defineFragment'),
+              t.identifier('defineFragment')
             ),
-            args,
-          ),
-        ),
+            args
+          )
+        )
       ));
     },
     OperationDefinition(node) {
@@ -81,11 +81,11 @@ export default function parseDocument(document, documentId, parentScope) {
       babelAstNodes.push(t.callExpression(
         t.memberExpression(
           documentId,
-          t.identifier(operationId),
+          t.identifier(operationId)
         ),
-        args,
+        args
       ));
-    },
+    }
   });
 
   return babelAstNodes;

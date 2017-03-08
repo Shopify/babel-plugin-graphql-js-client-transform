@@ -12,7 +12,7 @@ function visitFragment(fragment, fragments, fragmentsHash) {
       FragmentSpread(node) {
         // Visit the corresponding fragment definition
         visitFragment(fragmentsHash[node.name.value], fragments, fragmentsHash);
-      },
+      }
     });
     fragment.visited = true;
     fragment.marked = false;
