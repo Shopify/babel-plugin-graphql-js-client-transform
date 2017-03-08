@@ -1,7 +1,7 @@
 # babel-plugin-graphql-js-client-transform
 
-This Babel plugin will transform any raw GraphQL query tagged with `gql` (subject to change) to https://github.com/Shopify/graphql-js-client query builder syntax.
-In its current version, the plugin assumes an instance of https://github.com/Shopify/graphql-js-client is stored in a variable named `client`, the `variable` function is imported as `variable` and the `_enum` function is imported as `_enum`.
+This Babel plugin will transform any raw GraphQL query tagged with `gql` (subject to change) to [Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client) query builder syntax.
+In its current version, the plugin assumes an instance of [Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client) is stored in a variable named `client`, the `variable` function is imported as `variable` and the `_enum` function is imported as `_enum`.
 
 ## Table Of Contents
 
