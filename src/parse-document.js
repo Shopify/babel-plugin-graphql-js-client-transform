@@ -1,12 +1,12 @@
-const t = require('babel-types');
-const {visit} = require('graphql/language');
-const parseVariable = require('./parse-variable');
-const getSelections = require('./get-selections');
-const sortDefinitions = require('./sort-definitions');
+import * as t from 'babel-types';
+import {visit} from 'graphql/language';
+import parseVariable from './parse-variable';
+import getSelections from './get-selections';
+import sortDefinitions from './sort-definitions';
 
 // Goes through the document, parsing each OperationDefinition (i.e. query/mutation) and FragmentDefinition
 // and returns the resulting query builder code
-module.exports = function parseDocument(document, documentId, parentScope) {
+export default function parseDocument(document, documentId, parentScope) {
   const babelAstNodes = [];
   let spreadsId;
 
@@ -20,8 +20,8 @@ module.exports = function parseDocument(document, documentId, parentScope) {
       'const',
       [t.variableDeclarator(
         spreadsId,
-        t.objectExpression([])
-      )]
+        t.objectExpression([]),
+      )],
     ));
   }
 
@@ -38,16 +38,16 @@ module.exports = function parseDocument(document, documentId, parentScope) {
           '=',
           t.memberExpression(
             spreadsId,
-            t.identifier(node.name.value)
+            t.identifier(node.name.value),
           ),
           t.callExpression(
             t.memberExpression(
               documentId,
-              t.identifier('defineFragment')
+              t.identifier('defineFragment'),
             ),
-            args
-          )
-        )
+            args,
+          ),
+        ),
       ));
     },
     OperationDefinition(node) {
@@ -81,12 +81,12 @@ module.exports = function parseDocument(document, documentId, parentScope) {
       babelAstNodes.push(t.callExpression(
         t.memberExpression(
           documentId,
-          t.identifier(operationId)
+          t.identifier(operationId),
         ),
-        args
+        args,
       ));
-    }
+    },
   });
 
   return babelAstNodes;
-};
+}

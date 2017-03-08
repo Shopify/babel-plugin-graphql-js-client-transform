@@ -1,4 +1,4 @@
-const {visit} = require('graphql/language');
+import {visit} from 'graphql/language';
 
 // Recursive helper function for sortDefinitions
 function visitFragment(fragment, fragments, fragmentsHash) {
@@ -12,7 +12,7 @@ function visitFragment(fragment, fragments, fragmentsHash) {
       FragmentSpread(node) {
         // Visit the corresponding fragment definition
         visitFragment(fragmentsHash[node.name.value], fragments, fragmentsHash);
-      }
+      },
     });
     fragment.visited = true;
     fragment.marked = false;
@@ -22,7 +22,7 @@ function visitFragment(fragment, fragments, fragmentsHash) {
 
 // Sorts the definitions such that all fragment definitions are before operation definitions and fragments definitions
 // are in reverse topological order
-module.exports = function sortDefinitions(definitions) {
+export default function sortDefinitions(definitions) {
   const fragments = definitions.filter((definition) => {
     return definition.kind === 'FragmentDefinition';
   });
@@ -47,4 +47,4 @@ module.exports = function sortDefinitions(definitions) {
   });
 
   return sortedFragments.concat(operations);
-};
+}

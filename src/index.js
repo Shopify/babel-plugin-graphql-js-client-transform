@@ -1,6 +1,6 @@
-const {parse} = require('graphql/language');
-const t = require('babel-types');
-const parseDocument = require('./parse-document');
+import {parse} from 'graphql/language';
+import * as t from 'babel-types';
+import parseDocument from './parse-document';
 
 const templateElementVisitor = {
   TemplateElement(path) {
@@ -15,11 +15,11 @@ const templateElementVisitor = {
         t.callExpression(
           t.memberExpression(
             t.identifier('client'),
-            t.identifier('document')
+            t.identifier('document'),
           ),
-          []
-        )
-      )]
+          [],
+        ),
+      )],
     ));
 
     // Parse the document into a GraphQL AST
@@ -35,17 +35,17 @@ const templateElementVisitor = {
     } catch (error) {
       throw Error(error.message);
     }
-  }
+  },
 };
 
-module.exports = function() {
+export default function() {
   return {
     visitor: {
       TaggedTemplateExpression(path) {
         if (path.node.tag.name === 'gql') {
           path.traverse(templateElementVisitor, {parentPath: path});
         }
-      }
-    }
+      },
+    },
   };
-};
+}

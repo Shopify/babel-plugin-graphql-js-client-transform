@@ -1,6 +1,6 @@
-const {parse} = require('graphql/language');
-const assert = require('assert');
-const sortDefinitions = require('../src/sort-definitions');
+import {parse} from 'graphql/language';
+import assert from 'assert';
+import sortDefinitions from '../src/sort-definitions';
 
 suite('sort-definitions-test', () => {
   test('it orders fragment definitions before operation definitions', () => {

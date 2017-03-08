@@ -1,6 +1,6 @@
-const t = require('babel-types');
+import * as t from 'babel-types';
 
-module.exports = function parseArgValue(argValue) {
+export default function parseArgValue(argValue) {
   if (argValue.kind === 'StringValue') {
     return t.stringLiteral(argValue.value);
   } else if (argValue.kind === 'EnumValue') {
@@ -14,4 +14,4 @@ module.exports = function parseArgValue(argValue) {
   } else {
     throw Error(`Unrecognized type "${argValue.kind}"`);
   }
-};
+}

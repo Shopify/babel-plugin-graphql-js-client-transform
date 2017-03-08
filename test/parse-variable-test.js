@@ -1,6 +1,6 @@
-const t = require('babel-types');
-const assert = require('assert');
-const parseVariable = require('../src/parse-variable');
+import * as t from 'babel-types';
+import assert from 'assert';
+import parseVariable from '../src/parse-variable';
 
 suite('parse-variable-test', () => {
   test('it can parse a simple variable into a Babel AST node', () => {

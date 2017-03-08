@@ -1,6 +1,6 @@
-const t = require('babel-types');
-const assert = require('assert');
-const parseArg = require('../src/parse-arg');
+import * as t from 'babel-types';
+import assert from 'assert';
+import parseArg from '../src/parse-arg';
 
 suite('parse-arg-test', () => {
   test('it can parse scalar args', () => {

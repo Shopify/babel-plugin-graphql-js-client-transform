@@ -1,7 +1,7 @@
-const {parseValue} = require('graphql/language');
-const t = require('babel-types');
-const assert = require('assert');
-const parseArgValue = require('../src/parse-arg-value');
+import {parseValue} from 'graphql/language';
+import * as t from 'babel-types';
+import assert from 'assert';
+import parseArgValue from '../src/parse-arg-value';
 
 suite('parse-arg-value-test', () => {
   test('it can parse string arg values', () => {

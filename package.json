@@ -1,20 +1,39 @@
 {
-  "name": "@shopify/babel-plugin-graphql-transform",
-  "version": "0.0.1",
-  "description": "Babel plugin for transforming raw GraphQL queries into @shopify/graphql-js-client's query builder syntax",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha -u tdd",
-    "lint": "eslint --max-warnings 0 -c .eslintrc.json src/ test/"
-  },
-  "author": "",
-  "license": "ISC",
+  "name": "babel-plugin-graphql-js-client-transform",
+  "version": "1.0.0",
+  "description": "Babel plugin for transforming raw GraphQL queries into @shopify/graphql-js-client query builder syntax",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "author": "Shopify Inc.",
+  "dependencies": {},
   "devDependencies": {
+    "babel": "6.5.2",
+    "babel-cli": "6.11.4",
+    "babel-core": "6.13.2",
+    "babel-plugin-add-shopify-header": "1.0.5",
+    "babel-preset-shopify": "13.0.0",
+    "babel-register": "6.11.6",
     "babel-types": "6.23.0",
-    "eslint": "3.16.1",
-    "eslint-plugin-shopify": "15.1.1",
+    "eslint": "3.3.1",
+    "eslint-plugin-shopify": "14.0.0",
     "graphql": "0.9.1",
-    "mocha": "3.2.0"
+    "mocha": "3.0.2"
   },
-  "dependencies": {}
+  "scripts": {
+    "test": "yarn run lint-allow-warning && mocha --compilers js:babel-register -u tdd test/",
+    "prepublish": "babel -d lib/ src/",
+    "lint": "eslint --max-warnings 0 -c .eslintrc.json src/ test/",
+    "lint-allow-warning": "eslint -c .eslintrc.json src/ test/"
+  },
+  "keywords": [
+    "graphql,babel"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Shopify/babel-plugin-graphql-js-client-transform.git"
+  },
+  "homepage": "https://github.com/Shopify/babel-plugin-graphql-js-client-transform",
+  "bugs": {
+    "url": "https://github.com/Shopify/babel-plugin-graphql-js-client-transform/issues"
+  }
 }
