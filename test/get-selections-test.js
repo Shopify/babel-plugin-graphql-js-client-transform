@@ -11,7 +11,6 @@ suite('get-selections-test', () => {
         field2
         field3
       }`).definitions[0].selectionSet;
-
     const selections = getSelections(selectionSet, ['root']);
     const expectedSelections = [
       t.expressionStatement(
@@ -56,7 +55,6 @@ suite('get-selections-test', () => {
           field5
         }
       }`).definitions[0].selectionSet;
-
     const selections = getSelections(selectionSet, ['root']);
     const expectedSelections = [
       t.expressionStatement(
@@ -130,7 +128,6 @@ suite('get-selections-test', () => {
           field
         }
       }`).definitions[0].selectionSet;
-
     const selections = getSelections(selectionSet, ['root']);
     const expectedSelections = [
       t.expressionStatement(
@@ -165,8 +162,8 @@ suite('get-selections-test', () => {
 
   test('it can return fragment spread selections', () => {
     const selectionSet = parse('{ ...spreadName }').definitions[0].selectionSet;
-
-    const selections = getSelections(selectionSet, ['root'], t.identifier('_spread'));
+    const spreadId = t.identifier('_spread');
+    const selections = getSelections(selectionSet, ['root'], spreadId);
     const expectedSelections = [
       t.expressionStatement(
         t.callExpression(
@@ -175,7 +172,7 @@ suite('get-selections-test', () => {
             t.identifier('addFragment')
           ),
           [
-            t.memberExpression(t.identifier('_spread'), t.identifier('spreadName'))
+            t.memberExpression(spreadId, t.identifier('spreadName'))
           ]
         )
       )
@@ -190,7 +187,6 @@ suite('get-selections-test', () => {
         field2
       }
     }`).definitions[0].selectionSet;
-
     const selections = getSelections(selectionSet, ['root']);
     const expectedSelections = [
       t.expressionStatement(
