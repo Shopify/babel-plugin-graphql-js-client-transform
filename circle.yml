@@ -1,0 +1,6 @@
+machine:
+  node:
+    version: v6.8.1
+test:
+  override:
+    - yarn test

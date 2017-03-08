@@ -1,8 +1,8 @@
-const t = require('babel-types');
-const parseArg = require('./parse-arg');
+import * as t from 'babel-types';
+import parseArg from './parse-arg';
 
 // Returns the body of the block statement representing the selections
-module.exports = function getSelections(selectionSet, parentSelections, spreadsId) {
+export default function getSelections(selectionSet, parentSelections, spreadsId) {
   const selections = [];
 
   // Add each selection onto the parentSelection
@@ -59,12 +59,12 @@ module.exports = function getSelections(selectionSet, parentSelections, spreadsI
       t.callExpression(
         t.memberExpression(
           t.identifier(parentSelection),
-          addOperation
+          addOperation,
         ),
-        args
-      )
+        args,
+      ),
     ));
   });
 
   return selections;
-};
+}

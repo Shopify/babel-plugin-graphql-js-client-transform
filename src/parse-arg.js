@@ -1,7 +1,7 @@
-const t = require('babel-types');
-const parseArgValue = require('./parse-arg-value');
+import * as t from 'babel-types';
+import parseArgValue from './parse-arg-value';
 
-module.exports = function parseArg(arg) {
+export default function parseArg(arg) {
   if (arg.value.value) {
     // Scalar or Enum arg value
     return t.objectProperty(t.identifier(arg.name.value), parseArgValue(arg.value));
@@ -17,4 +17,4 @@ module.exports = function parseArg(arg) {
   } else {
     return t.objectProperty(t.identifier(arg.name.value), t.callExpression(t.identifier('variable'), [t.stringLiteral(arg.value.name.value)]));
   }
-};
+}
