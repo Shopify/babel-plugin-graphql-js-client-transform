@@ -20,7 +20,7 @@ function visitFragment(fragment, fragments, fragmentsHash) {
   }
 }
 
-// Sorts the definitions such that all fragment definitions are before operations definitions and fragments definitions
+// Sorts the definitions such that all fragment definitions are before operation definitions and fragments definitions
 // are in reverse topological order
 module.exports = function sortDefinitions(definitions) {
   const fragments = definitions.filter((definition) => {
