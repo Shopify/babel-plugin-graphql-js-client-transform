@@ -11,7 +11,7 @@ In its current version, the plugin assumes an instance of [Shopify/graphql-js-cl
 
 ## Installation
 ```bash
-$ npm install babel-plugin-graphql-js-client-transform
+$ yarn install babel-plugin-graphql-js-client-transform
 ```
 
 ## Examples

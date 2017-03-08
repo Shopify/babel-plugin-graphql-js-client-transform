@@ -16,14 +16,14 @@ git clone git@github.com:your-username/babel-plugin-graphql-js-client-transform.
 
 Install the project's dependencies:
 ```
-npm install
+yarn install
 ```
 
 Write some features.
 
 Add some tests and make your change. Re-run the tests with:
 ```
-npm run test
+yarn run test
 ```
 
 ## Examples
