@@ -1,15 +1,12 @@
 # babel-plugin-graphql-js-client-transform
 
-Babel plugin for transforming raw GraphQL queries into @shopify/graphql-js-client&#x27;s query builder syntax
+This Babel plugin will transform any raw GraphQL query tagged with `gql` (subject to change) to https://github.com/Shopify/graphql-js-client query builder syntax.
+In its current version, the plugin assumes an instance of https://github.com/Shopify/graphql-js-client is stored in a variable named `client`, the `variable` function is imported as `variable` and the `_enum` function is imported as `_enum`.
 
 ## Table Of Contents
 
 - [Installation](#installation)
 - [Examples](#examples)
-- [API](#api)
-    + [`const instance = babelPluginGraphqlJsClientTransform([options])`](#const-instance-babelplugingraphqljsclienttransform-options)
-    + [`someFunction(variable, callback)`](#somefunction-variable-callback)
-    + [`anotherFunction()`](#anotherfunction)
 - [License](http://github.com/Shopify/babel-plugin-graphql-js-client-transform/blob/master/LICENSE.md)
 
 ## Installation
@@ -20,49 +17,61 @@ $ npm install babel-plugin-graphql-js-client-transform
 ## Examples
 
 #### Example 1
+Convert a simple query.
 
-Decribe Example 1. Stumptown selfies put a bird on it occupy, scenester ramps jean shorts next level kale chips seitan:
+##### Source Code
+``` js
+client.send(gql`
+  query {
+    shop {
+      name
+    }
+  }
+`);
+```
 
-```javascript
-import babelPluginGraphqlJsClientTransform from 'babel-plugin-graphql-js-client-transform';
+##### Transformed Code
+```js
+const _document = client.document(); // Creates a document to store the query
+_document.addQuery((root) => {
+  root.add('shop', (shop) => {
+     shop.add('name');
+  });
+});
 
-/********************************/
-/********************************/
-/* -- PUT AN EXAMPLE IN HERE -- */
-/********************************/
-/********************************/
+client.send(_document);
 ```
 
 #### Example 2
+The query can also be stored inside a variable instead of being sent directly.
 
-Decribe Example 1. Stumptown selfies put a bird on it occupy, scenester ramps jean shorts next level kale chips seitan:
+##### Source Code
 
-```javascript
-import babelPluginGraphqlJsClientTransform from 'babel-plugin-graphql-js-client-transform';
+```js
+const query = gql`
+  query {
+    shop {
+      name
+    }
+  }
+`;
 
-/********************************/
-/********************************/
-/* -- PUT AN EXAMPLE IN HERE -- */
-/********************************/
-/********************************/
+client.send(query);
 ```
 
-## API
+##### Transformed Code
+```js
+const _document = client.document(); // Creates a document to store the operations
+_document.addQuery((root) => {
+  root.add('shop', (shop) => {
+     shop.add('name');
+  });
+});
 
-#### `const instance = babelPluginGraphqlJsClientTransform([options]);`
+const query = _document;
 
-Options you can pass `babelPluginGraphqlJsClientTransform`:
-- `option1` - Replace with a description of option 1
-- `option2` - Replace with a description of option 2
-- `option3` - Replace with a description of option 2
-
-#### `instance.someFunction(variable, callback);`
-
-Replace with `someFunction` description. Hoodie post-ironic polaroid salvia, microdosing vice ethical etsy bushwick roof party swag. Farm-to-table humblebrag etsy neutra synth.
-
-#### `instance.anotherFunction();`
-
-Replace with `anotherFunction` description. Tacos polaroid cronut trust fund mumblecore biodiesel viral hella helvetica actually organic. Stumptown selfies put a bird on it occupy, scenester ramps jean shorts next level kale chips seitan.
+client.send(query);
+```
 
 ## License
 
