@@ -41,8 +41,10 @@ const templateElementVisitor = {
 export default function() {
   return {
     visitor: {
-      TaggedTemplateExpression(path) {
-        if (path.node.tag.name === 'gql') {
+      TaggedTemplateExpression(path, state) {
+        const tag = state.opts.tag || 'gql';
+
+        if (path.node.tag.name === tag) {
           path.traverse(templateElementVisitor, {parentPath: path});
         }
       },
