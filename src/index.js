@@ -30,12 +30,8 @@ const templateElementVisitor = {
 
     statementParentPath.insertBefore(babelAstNodes);
 
-    try {
-      this.parentPath.replaceWith(documentId);
-    } catch (error) {
-      throw Error(error.message);
-    }
-  },
+    this.parentPath.replaceWith(documentId);
+  }
 };
 
 export default function() {
