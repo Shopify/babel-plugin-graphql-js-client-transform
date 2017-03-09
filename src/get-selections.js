@@ -59,10 +59,10 @@ export default function getSelections(selectionSet, parentSelections, spreadsId)
       t.callExpression(
         t.memberExpression(
           t.identifier(parentSelection),
-          addOperation,
+          addOperation
         ),
-        args,
-      ),
+        args
+      )
     ));
   });
 

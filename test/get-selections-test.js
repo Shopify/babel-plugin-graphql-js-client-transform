@@ -17,28 +17,28 @@ suite('get-selections-test', () => {
         t.callExpression(
           t.memberExpression(
             t.identifier('root'),
-            t.identifier('add'),
+            t.identifier('add')
           ),
-          [t.stringLiteral('field1')],
-        ),
+          [t.stringLiteral('field1')]
+        )
       ),
       t.expressionStatement(
         t.callExpression(
           t.memberExpression(
             t.identifier('root'),
-            t.identifier('add'),
+            t.identifier('add')
           ),
-          [t.stringLiteral('field2')],
-        ),
+          [t.stringLiteral('field2')]
+        )
       ),
       t.expressionStatement(
         t.callExpression(
           t.memberExpression(
             t.identifier('root'),
-            t.identifier('add'),
+            t.identifier('add')
           ),
-          [t.stringLiteral('field3')],
-        ),
+          [t.stringLiteral('field3')]
+        )
       )];
 
     assert.deepEqual(selections, expectedSelections);
@@ -61,7 +61,7 @@ suite('get-selections-test', () => {
         t.callExpression(
           t.memberExpression(
             t.identifier('root'),
-            t.identifier('add'),
+            t.identifier('add')
           ),
           [
             t.stringLiteral('field1'),
@@ -72,7 +72,7 @@ suite('get-selections-test', () => {
                   t.callExpression(
                     t.memberExpression(
                       t.identifier('field1'),
-                      t.identifier('add'),
+                      t.identifier('add')
                     ),
                     [
                       t.stringLiteral('field2'),
@@ -83,39 +83,39 @@ suite('get-selections-test', () => {
                             t.callExpression(
                               t.memberExpression(
                                 t.identifier('field2'),
-                                t.identifier('add'),
+                                t.identifier('add')
                               ),
-                              [t.stringLiteral('field3')],
-                            ),
+                              [t.stringLiteral('field3')]
+                            )
                           ),
                           t.expressionStatement(
                             t.callExpression(
                               t.memberExpression(
                                 t.identifier('field2'),
-                                t.identifier('add'),
+                                t.identifier('add')
                               ),
-                              [t.stringLiteral('field4')],
-                            ),
-                          ),
-                        ]),
-                      ),
-                    ],
-                  ),
+                              [t.stringLiteral('field4')]
+                            )
+                          )
+                        ])
+                      )
+                    ]
+                  )
                 ),
                 t.expressionStatement(
                   t.callExpression(
                     t.memberExpression(
                       t.identifier('field1'),
-                      t.identifier('add'),
+                      t.identifier('add')
                     ),
-                    [t.stringLiteral('field5')],
-                  ),
-                ),
-              ]),
-            ),
-          ],
-        ),
-      ),
+                    [t.stringLiteral('field5')]
+                  )
+                )
+              ])
+            )
+          ]
+        )
+      )
     ];
 
     assert.deepEqual(selections, expectedSelections);
@@ -134,7 +134,7 @@ suite('get-selections-test', () => {
         t.callExpression(
           t.memberExpression(
             t.identifier('root'),
-            t.identifier('addInlineFragmentOn'),
+            t.identifier('addInlineFragmentOn')
           ),
           [
             t.stringLiteral('Product'),
@@ -145,16 +145,16 @@ suite('get-selections-test', () => {
                   t.callExpression(
                     t.memberExpression(
                       t.identifier('Product'),
-                      t.identifier('add'),
+                      t.identifier('add')
                     ),
-                    [t.stringLiteral('field')],
-                  ),
-                ),
-              ]),
-            ),
-          ],
-        ),
-      ),
+                    [t.stringLiteral('field')]
+                  )
+                )
+              ])
+            )
+          ]
+        )
+      )
     ];
 
     assert.deepEqual(selections, expectedSelections);
@@ -169,13 +169,13 @@ suite('get-selections-test', () => {
         t.callExpression(
           t.memberExpression(
             t.identifier('root'),
-            t.identifier('addFragment'),
+            t.identifier('addFragment')
           ),
           [
-            t.memberExpression(spreadId, t.identifier('spreadName')),
-          ],
-        ),
-      ),
+            t.memberExpression(spreadId, t.identifier('spreadName'))
+          ]
+        )
+      )
     ];
 
     assert.deepEqual(selections, expectedSelections);
@@ -193,7 +193,7 @@ suite('get-selections-test', () => {
         t.callExpression(
           t.memberExpression(
             t.identifier('root'),
-            t.identifier('add'),
+            t.identifier('add')
           ),
           [
             t.stringLiteral('field1'),
@@ -201,8 +201,8 @@ suite('get-selections-test', () => {
               t.objectProperty(t.identifier('alias'), t.stringLiteral('fieldAlias')),
               t.objectProperty(
                 t.identifier('args'),
-                t.objectExpression([t.objectProperty(t.identifier('first'), t.numericLiteral(10))]),
-              ),
+                t.objectExpression([t.objectProperty(t.identifier('first'), t.numericLiteral(10))])
+              )
             ]),
             t.arrowFunctionExpression(
               [t.identifier('field1')],
@@ -211,16 +211,16 @@ suite('get-selections-test', () => {
                   t.callExpression(
                     t.memberExpression(
                       t.identifier('field1'),
-                      t.identifier('add'),
+                      t.identifier('add')
                     ),
-                    [t.stringLiteral('field2')],
-                  ),
-                ),
-              ]),
-            ),
-          ],
-        ),
-      ),
+                    [t.stringLiteral('field2')]
+                  )
+                )
+              ])
+            )
+          ]
+        )
+      )
     ];
 
     assert.deepEqual(selections, expectedSelections);

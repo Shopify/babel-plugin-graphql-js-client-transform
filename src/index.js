@@ -15,11 +15,11 @@ const templateElementVisitor = {
         t.callExpression(
           t.memberExpression(
             t.identifier('client'),
-            t.identifier('document'),
+            t.identifier('document')
           ),
-          [],
-        ),
-      )],
+          []
+        )
+      )]
     ));
 
     // Parse the document into a GraphQL AST
@@ -43,7 +43,7 @@ export default function() {
         if (path.node.tag.name === tag) {
           path.traverse(templateElementVisitor, {parentPath: path});
         }
-      },
-    },
+      }
+    }
   };
 }
