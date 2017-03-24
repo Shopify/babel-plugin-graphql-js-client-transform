@@ -7,12 +7,12 @@ function extractVariableType(variable) {
 
 // Parses a GraphQL AST variable and returns the babel type for the variable in query builder syntax
 // variable('first', 'Int!')
-export default function parseVariable(variable) {
+export default function parseVariable(variable, enumId = t.identifier('_enum'), variableId = t.identifier('variable')) {
   const args = [t.stringLiteral(variable.variable.name.value), t.stringLiteral(extractVariableType(variable))];
 
   if (variable.defaultValue) {
-    args.push(parseArgValue(variable.defaultValue));
+    args.push(parseArgValue(variable.defaultValue, enumId));
   }
 
-  return (t.callExpression(t.identifier('variable'), args));
+  return (t.callExpression(variableId, args));
 }
