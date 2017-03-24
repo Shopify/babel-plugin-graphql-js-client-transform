@@ -2,11 +2,10 @@
 
 This Babel plugin will transform any tagged raw GraphQL query to [Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client) query builder syntax.
 
-In its current version, the plugin assumes an instance of [Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client) is stored in a variable named `client`, the `variable` function is imported as `variable` and the `_enum` function is imported as `_enum`.
-
 ## Table Of Contents
 
 - [Installation](#installation)
+- [Usage](#usage)
 - [Examples](#examples)
 - [License](http://github.com/Shopify/babel-plugin-graphql-js-client-transform/blob/master/LICENSE.md)
 
@@ -34,7 +33,42 @@ By default, the plugin will search for the tag `gql`. This value is configurable
 }
 ```
 
+## Usage
+
+Simply tag your raw GraphQL queries and the plugin will transform them. If no arguments are supplied to the tag, the 
+plugin will use `client`, `_enum` and `variable` as the variable/function names for an instance of 
+[Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client), and the `_enum` and `variable` functions.
+
+If you would like to supply your own variable/function names, use the following syntax:
+```js
+gql({client: myClient, _enum: myEnum, variable: myVariable})`query ($first: Int!) {
+  shop {
+    products(first: $first, sortKey: TITLE) {
+      ...
+    }
+  }
+}`
+```
+which will transform to
+
+```js
+const _document = myClient.document();
+
+_document.addQuery([myVariable("first", "Int!")], root => {
+  root.add("shop", shop => {
+    shop.add("products", {args: {sortKey: myEnum("TITLE"), first: myVariable("first")}}, products => {
+      ...
+    });
+  });
+})
+```
+You can specify any combination of variable names (e.g. `gql({client: myClient, variable: myVariable})`) and the plugin
+will use default values for the rest (`client`, `_enum` and `variable`).
+
+
 ## Examples
+
+The following are example usages using the default variable/function names.
 
 #### Example 1
 Convert a simple query.
