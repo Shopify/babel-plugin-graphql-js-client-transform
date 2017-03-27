@@ -12,7 +12,10 @@ suite('parse-arg-test', () => {
   test('it can parse enum args', () => {
     const arg = {name: {value: 'sortKey'}, value: {kind: 'EnumValue', value: 'TITLE'}};
 
-    assert.deepEqual(parseArg(arg), t.objectProperty(t.identifier('sortKey'), t.callExpression(t.identifier('_enum'), [t.stringLiteral('TITLE')])));
+    assert.deepEqual(parseArg(arg), t.objectProperty(
+      t.identifier('sortKey'),
+      t.callExpression(t.memberExpression(t.identifier('client'), t.identifier('enum')), [t.stringLiteral('TITLE')])
+    ));
   });
 
   test('it can parse object args', () => {
@@ -24,6 +27,9 @@ suite('parse-arg-test', () => {
   test('it can parse variable args', () => {
     const arg = {name: {value: 'input'}, value: {name: {value: 'inputVariable'}}};
 
-    assert.deepEqual(parseArg(arg), t.objectProperty(t.identifier('input'), t.callExpression(t.identifier('variable'), [t.stringLiteral('inputVariable')])));
+    assert.deepEqual(parseArg(arg), t.objectProperty(t.identifier('input'), t.callExpression(
+      t.memberExpression(t.identifier('client'), t.identifier('variable')),
+      [t.stringLiteral('inputVariable')])
+    ));
   });
 });

@@ -6,7 +6,7 @@ import sortDefinitions from './sort-definitions';
 
 // Goes through the document, parsing each OperationDefinition (i.e. query/mutation) and FragmentDefinition
 // and returns the resulting query builder code
-export default function parseDocument(document, documentId, parentScope) {
+export default function parseDocument(document, documentId, parentScope, clientId = t.identifier('client')) {
   const babelAstNodes = [];
   let spreadsId;
 
@@ -31,7 +31,7 @@ export default function parseDocument(document, documentId, parentScope) {
       // Fragments are always named
       const args = [t.stringLiteral(node.name.value), t.stringLiteral(node.typeCondition.name.value)];
 
-      args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections, spreadsId))));
+      args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections, spreadsId, clientId))));
 
       babelAstNodes.push(t.expressionStatement(
         t.assignmentExpression(
@@ -62,13 +62,13 @@ export default function parseDocument(document, documentId, parentScope) {
         const variables = [];
 
         node.variableDefinitions.forEach((variable) => {
-          variables.push(parseVariable(variable));
+          variables.push(parseVariable(variable, clientId));
         });
 
         args.push(t.arrayExpression(variables));
       }
 
-      args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections, spreadsId))));
+      args.push(t.arrowFunctionExpression([t.identifier('root')], t.blockStatement(getSelections(node.selectionSet, parentSelections, spreadsId, clientId))));
 
       let operationId;
 

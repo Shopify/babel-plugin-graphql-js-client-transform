@@ -14,7 +14,7 @@ const templateElementVisitor = {
         documentId,
         t.callExpression(
           t.memberExpression(
-            t.identifier('client'),
+            this.clientId,
             t.identifier('document')
           ),
           []
@@ -26,7 +26,7 @@ const templateElementVisitor = {
     const document = parse(path.node.value.raw);
 
     // Convert the GraphQL AST into a list of Babel AST nodes of the query building
-    const babelAstNodes = parseDocument(document, documentId, statementParentPath.scope);
+    const babelAstNodes = parseDocument(document, documentId, statementParentPath.scope, this.clientId);
 
     statementParentPath.insertBefore(babelAstNodes);
 
@@ -40,8 +40,11 @@ export default function() {
       TaggedTemplateExpression(path, state) {
         const tag = state.opts.tag || 'gql';
 
+        // If user doesn't specify variable names, use default client variable name
         if (path.node.tag.name === tag) {
-          path.traverse(templateElementVisitor, {parentPath: path});
+          path.traverse(templateElementVisitor, {parentPath: path, clientId: t.identifier('client')});
+        } else if (path.node.tag.callee.name === tag) {
+          path.traverse(templateElementVisitor, {parentPath: path, clientId: path.node.tag.arguments[0]});
         }
       }
     }

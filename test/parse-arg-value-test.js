@@ -19,7 +19,7 @@ suite('parse-arg-value-test', () => {
   test('it can parse enum arg values', () => {
     const argValue = parseValue('TITLE');
 
-    assert.deepEqual(parseArgValue(argValue), t.callExpression(t.identifier('_enum'), [t.stringLiteral('TITLE')]));
+    assert.deepEqual(parseArgValue(argValue), t.callExpression(t.memberExpression(t.identifier('client'), t.identifier('enum')), [t.stringLiteral('TITLE')]));
   });
 
   test('it can parse float arg values', () => {
