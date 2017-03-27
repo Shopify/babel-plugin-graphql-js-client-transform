@@ -2,7 +2,7 @@ import * as t from 'babel-types';
 import parseArg from './parse-arg';
 
 // Returns the body of the block statement representing the selections
-export default function getSelections(selectionSet, parentSelections, spreadsId, enumId = t.identifier('_enum'), variableId = t.identifier('variable')) {
+export default function getSelections(selectionSet, parentSelections, spreadsId, clientId = t.identifier('client')) {
   const selections = [];
 
   // Add each selection onto the parentSelection
@@ -35,7 +35,7 @@ export default function getSelections(selectionSet, parentSelections, spreadsId,
       const graphQLArgs = [];
 
       selection.arguments.forEach((argument) => {
-        graphQLArgs.push(parseArg(argument, enumId, variableId));
+        graphQLArgs.push(parseArg(argument, clientId));
       });
 
       options.push(t.objectProperty(t.identifier('args'), t.objectExpression(graphQLArgs)));
@@ -49,7 +49,7 @@ export default function getSelections(selectionSet, parentSelections, spreadsId,
     // Add any selections on this selection
     if (selection.selectionSet) {
       parentSelections.push(name);
-      args.push(t.arrowFunctionExpression([t.identifier(name)], t.blockStatement(getSelections(selection.selectionSet, parentSelections, spreadsId, enumId, variableId))));
+      args.push(t.arrowFunctionExpression([t.identifier(name)], t.blockStatement(getSelections(selection.selectionSet, parentSelections, spreadsId, clientId))));
       parentSelections.pop();
     }
 

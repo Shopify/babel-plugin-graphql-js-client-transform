@@ -26,7 +26,7 @@ const templateElementVisitor = {
     const document = parse(path.node.value.raw);
 
     // Convert the GraphQL AST into a list of Babel AST nodes of the query building
-    const babelAstNodes = parseDocument(document, documentId, statementParentPath.scope, this.enumId, this.variableId);
+    const babelAstNodes = parseDocument(document, documentId, statementParentPath.scope, this.clientId);
 
     statementParentPath.insertBefore(babelAstNodes);
 
@@ -40,33 +40,11 @@ export default function() {
       TaggedTemplateExpression(path, state) {
         const tag = state.opts.tag || 'gql';
 
-        // If user doesn't specify variable names, use defaults
+        // If user doesn't specify variable names, use default client variable name
         if (path.node.tag.name === tag) {
-          path.traverse(templateElementVisitor, {
-            parentPath: path,
-            clientId: t.identifier('client'),
-            variableId: t.identifier('variable'),
-            enumId: t.identifier('_enum')
-          });
+          path.traverse(templateElementVisitor, {parentPath: path, clientId: t.identifier('client')});
         } else if (path.node.tag.callee.name === tag) {
-          const variableIds = path.node.tag.arguments[0].properties;
-
-          const clientNode = variableIds.find((identifier) => {
-            return identifier.key.name === 'client';
-          });
-          const clientId = clientNode ? clientNode.value : t.identifier('client');
-
-          const enumNode = variableIds.find((identifier) => {
-            return identifier.key.name === '_enum';
-          });
-          const enumId = enumNode ? enumNode.value : t.identifier('_enum');
-
-          const variableNode = variableIds.find((identifier) => {
-            return identifier.key.name === 'variable';
-          });
-          const variableId = variableNode ? variableNode.value : t.identifier('variable');
-
-          path.traverse(templateElementVisitor, {parentPath: path, clientId, enumId, variableId});
+          path.traverse(templateElementVisitor, {parentPath: path, clientId: path.node.tag.arguments[0]});
         }
       }
     }

@@ -198,7 +198,10 @@ suite('parse-document-test', () => {
         ),
         [
           t.arrayExpression([
-            t.callExpression(t.identifier('variable'), [t.stringLiteral('id'), t.stringLiteral('ID')])
+            t.callExpression(
+              t.memberExpression(t.identifier('client'), t.identifier('variable')),
+              [t.stringLiteral('id'), t.stringLiteral('ID')]
+            )
           ]),
           t.arrowFunctionExpression(
             [t.identifier('root')],
@@ -217,7 +220,10 @@ suite('parse-document-test', () => {
                         t.objectExpression([
                           t.objectProperty(
                             t.identifier('id'),
-                            t.callExpression(t.identifier('variable'), [t.stringLiteral('id')])
+                            t.callExpression(
+                              t.memberExpression(t.identifier('client'), t.identifier('variable')),
+                              [t.stringLiteral('id')]
+                            )
                           )
                         ])
                       )

@@ -1,10 +1,16 @@
 import * as t from 'babel-types';
 
-export default function parseArgValue(argValue, enumId = t.identifier('_enum')) {
+export default function parseArgValue(argValue, clientId = t.identifier('client')) {
   if (argValue.kind === 'StringValue') {
     return t.stringLiteral(argValue.value);
   } else if (argValue.kind === 'EnumValue') {
-    return t.callExpression(enumId, [t.stringLiteral(argValue.value)]);
+    return t.callExpression(
+      t.memberExpression(
+        clientId,
+        t.identifier('enum')
+      ),
+      [t.stringLiteral(argValue.value)]
+    );
   } else if (argValue.kind === 'IntValue') {
     return t.numericLiteral(parseInt(argValue.value, 10));
   } else if (argValue.kind === 'FloatValue') {

@@ -35,17 +35,16 @@ By default, the plugin will search for the tag `gql`. This value is configurable
 
 ## Usage
 
-Simply tag your raw GraphQL queries and the plugin will transform them. If no arguments are supplied to the tag, the 
-plugin will use `client`, `_enum` and `variable` as the variable/function names for an instance of 
-[Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client), and the `_enum` and `variable` functions.
+Simply tag your raw GraphQL queries and the plugin will transform them. If no arguments are supplied to the tag, the
+plugin will use `client` as the variable name for an instance of
+[Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client).
+See [examples](#examples) below for this usage.
 
-If you would like to supply your own variable/function names, use the following syntax:
+If you would like to supply your own variable name, use the following syntax:
 ```js
-gql({client: myClient, _enum: myEnum, variable: myVariable})`query ($first: Int!) {
+gql(myClient)`query {
   shop {
-    products(first: $first, sortKey: TITLE) {
-      ...
-    }
+    name
   }
 }`
 ```
@@ -54,21 +53,16 @@ which will transform to
 ```js
 const _document = myClient.document();
 
-_document.addQuery([myVariable("first", "Int!")], root => {
+_document.addQuery(root => {
   root.add("shop", shop => {
-    shop.add("products", {args: {sortKey: myEnum("TITLE"), first: myVariable("first")}}, products => {
-      ...
-    });
+    shop.add('name');
   });
 })
 ```
-You can specify any combination of variable names (e.g. `gql({client: myClient, variable: myVariable})`) and the plugin
-will use default values for the rest (`client`, `_enum` and `variable`).
-
 
 ## Examples
 
-The following are example usages using the default variable/function names.
+The following are example usages with the default variable name.
 
 #### Example 1
 Convert a simple query.
