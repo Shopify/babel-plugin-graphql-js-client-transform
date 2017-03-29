@@ -39,6 +39,6 @@ suite('parse-arg-value-test', () => {
 
     assert.throws(() => {
       parseArgValue(argValue);
-    }, 'Unrecognized type "FakeValue"');
+    }, /Unrecognized type "FakeValue"/);
   });
 });
