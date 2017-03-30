@@ -35,30 +35,9 @@ By default, the plugin will search for the tag `gql`. This value is configurable
 
 ## Usage
 
-Simply tag your raw GraphQL queries and the plugin will transform them. If no arguments are supplied to the tag, the
-plugin will use `client` as the variable name for an instance of
-[Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client).
-See [examples](#examples) below for this usage.
-
-If you would like to supply your own variable name, use the following syntax:
-```js
-gql(myClient)`query {
-  shop {
-    name
-  }
-}`
-```
-which will transform to
-
-```js
-const _document = myClient.document();
-
-_document.addQuery(root => {
-  root.add("shop", shop => {
-    shop.add('name');
-  });
-})
-```
+Simply tag your raw GraphQL queries and the plugin will transform them. An instance of
+[Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client)
+must be supplied to the tag.
 
 ## Examples
 
@@ -69,7 +48,7 @@ Convert a simple query.
 
 ##### Source Code
 ``` js
-client.send(gql`
+client.send(gql(client)`
   query {
     shop {
       name
@@ -96,7 +75,7 @@ The query can also be stored inside a variable instead of being sent directly.
 ##### Source Code
 
 ```js
-const query = gql`
+const query = gql(client)`
   query {
     shop {
       name
