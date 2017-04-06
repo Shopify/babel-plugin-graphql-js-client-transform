@@ -1,4 +1,7 @@
 {
+  "env": {
+    "node": true
+  },
   "root": true,
   "rules": {
     "newline-before-return": ["error"],
