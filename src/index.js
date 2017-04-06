@@ -40,10 +40,7 @@ export default function() {
       TaggedTemplateExpression(path, state) {
         const tag = state.opts.tag || 'gql';
 
-        // If user doesn't specify variable names, use default client variable name
-        if (path.node.tag.name === tag) {
-          path.traverse(templateElementVisitor, {parentPath: path, clientId: t.identifier('client')});
-        } else if (path.node.tag.callee.name === tag) {
+        if (path.node.tag.callee.name === tag) {
           path.traverse(templateElementVisitor, {parentPath: path, clientId: path.node.tag.arguments[0]});
         }
       }
