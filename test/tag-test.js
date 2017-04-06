@@ -58,4 +58,3 @@ suite('plugin-test', () => {
     );
   });
 });
-
