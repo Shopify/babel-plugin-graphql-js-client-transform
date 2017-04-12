@@ -40,7 +40,7 @@ export default function() {
       TaggedTemplateExpression(path, state) {
         const tag = state.opts.tag || 'gql';
 
-        if (path.node.tag.callee.name === tag) {
+        if (path.node.tag.callee && path.node.tag.callee.name === tag) {
           path.traverse(templateElementVisitor, {parentPath: path, clientId: path.node.tag.arguments[0]});
         }
       }
