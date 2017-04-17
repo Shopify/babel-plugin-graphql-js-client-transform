@@ -1,23 +1,24 @@
 import * as t from 'babel-types';
 
 export default function parseArgValue(argValue, clientId = t.identifier('client')) {
-  if (argValue.kind === 'StringValue') {
-    return t.stringLiteral(argValue.value);
-  } else if (argValue.kind === 'EnumValue') {
-    return t.callExpression(
-      t.memberExpression(
-        clientId,
-        t.identifier('enum')
-      ),
-      [t.stringLiteral(argValue.value)]
-    );
-  } else if (argValue.kind === 'IntValue') {
-    return t.numericLiteral(parseInt(argValue.value, 10));
-  } else if (argValue.kind === 'FloatValue') {
-    return t.numericLiteral(parseFloat(argValue.value));
-  } else if (argValue.kind === 'BooleanValue') {
-    return t.booleanLiteral(argValue.value);
-  } else {
-    throw Error(`Unrecognized type "${argValue.kind}"`);
+  switch (argValue.kind) {
+    case 'StringValue':
+      return t.stringLiteral(argValue.value);
+    case 'EnumValue':
+      return t.callExpression(
+        t.memberExpression(
+          clientId,
+          t.identifier('enum')
+        ),
+        [t.stringLiteral(argValue.value)]
+      );
+    case 'IntValue':
+      return t.numericLiteral(parseInt(argValue.value, 10));
+    case 'FloatValue':
+      return t.numericLiteral(parseFloat(argValue.value));
+    case 'BooleanValue':
+      return t.booleanLiteral(argValue.value);
+    default:
+      throw Error(`Unrecognized type "${argValue.kind}"`);
   }
 }

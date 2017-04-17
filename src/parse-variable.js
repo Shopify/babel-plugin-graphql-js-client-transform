@@ -2,16 +2,15 @@ import * as t from 'babel-types';
 import parseArgValue from './parse-arg-value';
 
 function extractVariableType(variable) {
-  if (variable.kind === 'NonNullType') {
-    return `${extractVariableType(variable.type)}!`;
+  switch (variable.kind) {
+    case 'NonNullType':
+      return `${extractVariableType(variable.type)}!`;
+    case 'ListType':
+      return `[${extractVariableType(variable.type)}]`;
+    default:
+      // NamedType
+      return variable.name.value;
   }
-
-  if (variable.kind === 'ListType') {
-    return `[${extractVariableType(variable.type)}]`;
-  }
-
-  // NamedType
-  return variable.name.value;
 }
 
 // Parses a GraphQL AST variable and returns the babel type for the variable in query builder syntax
