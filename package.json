@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-graphql-js-client-transform",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Babel plugin for transforming raw GraphQL queries into graphql-js-client query builder syntax",
   "main": "lib/index.js",
   "license": "MIT",
