@@ -32,5 +32,125 @@ suite('parse-variable-test', () => {
 
     assert.deepEqual(parseVariable(variable), babelAstNode);
   });
+
+  test('it can parse variables with array values into a Babel AST node', () => {
+    const variable = {
+      variable: {
+        name: {
+          value: 'arrayValue'
+        }
+      },
+      type: {
+        kind: 'ListType',
+        type: {
+          kind: 'NamedType',
+          name: {
+            kind: 'Name',
+            value: 'CheckoutLineItemUpdateInput'
+          }
+        }
+      }
+    };
+
+    const babelAstNode = t.callExpression(
+      t.memberExpression(t.identifier('client'), t.identifier('variable')),
+      [t.stringLiteral('arrayValue'), t.stringLiteral('[CheckoutLineItemUpdateInput]')]
+    );
+
+    assert.deepEqual(parseVariable(variable), babelAstNode);
+  });
+
+  test('it can parse variables with array values with non-null types into a Babel AST node', () => {
+    const variable = {
+      variable: {
+        name: {
+          value: 'arrayValue'
+        }
+      },
+      type: {
+        kind: 'ListType',
+        type: {
+          kind: 'NonNullType',
+          type: {
+            kind: 'NamedType',
+            name: {
+              kind: 'Name',
+              value: 'CheckoutLineItemUpdateInput'
+            }
+          }
+        }
+      }
+    };
+
+    const babelAstNode = t.callExpression(
+      t.memberExpression(t.identifier('client'), t.identifier('variable')),
+      [t.stringLiteral('arrayValue'), t.stringLiteral('[CheckoutLineItemUpdateInput!]')]
+    );
+
+    assert.deepEqual(parseVariable(variable), babelAstNode);
+  });
+
+  test('it can parse variables with non-null array values with non-null types into a Babel AST node', () => {
+    const variable = {
+      variable: {
+        name: {
+          value: 'arrayValue'
+        }
+      },
+      type: {
+        kind: 'NonNullType',
+        type: {
+          kind: 'ListType',
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: {
+                kind: 'Name',
+                value: 'CheckoutLineItemUpdateInput'
+              }
+            }
+          }
+        }
+      }
+    };
+
+    const babelAstNode = t.callExpression(
+      t.memberExpression(t.identifier('client'), t.identifier('variable')),
+      [t.stringLiteral('arrayValue'), t.stringLiteral('[CheckoutLineItemUpdateInput!]!')]
+    );
+
+    assert.deepEqual(parseVariable(variable), babelAstNode);
+  });
+
+  test('it can parse variables with non-null array values into a Babel AST node', () => {
+    const variable = {
+      variable: {
+        name: {
+          value: 'arrayValue'
+        }
+      },
+      type: {
+        kind: 'NonNullType',
+        type: {
+          kind: 'ListType',
+          type: {
+            kind: 'NamedType',
+            name: {
+              kind: 'Name',
+              value: 'CheckoutLineItemUpdateInput'
+            }
+          }
+        }
+      }
+    };
+
+    const babelAstNode = t.callExpression(
+      t.memberExpression(t.identifier('client'), t.identifier('variable')),
+      [t.stringLiteral('arrayValue'), t.stringLiteral('[CheckoutLineItemUpdateInput]!')]
+    );
+
+    assert.deepEqual(parseVariable(variable), babelAstNode);
+  });
 });
 
