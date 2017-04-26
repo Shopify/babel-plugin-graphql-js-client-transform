@@ -1,7 +1,7 @@
 import assert from 'assert';
 import {transform} from 'babel-core';
 
-suite('plugin-test', () => {
+suite('tag-test', () => {
   const splitter = /[\s]+/;
 
   function tokens(code) {
