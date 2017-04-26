@@ -56,8 +56,10 @@ export default function() {
 
 /**
  * This function should not be invoked.
- * This function is used to tag raw GraphQL queries that will be transcompiled into graphql-js-client's query builder syntax.
+ * This function is used to tag raw GraphQL queries that will be
+ * transcompiled into graphql-js-client's query builder syntax.
  */
 export function gql() {
-  throw new Error('This function should not be invoked. It should be used to tag template literals that will be transcompiled into graphql-js-client\'s query builder syntax.');
+  throw new Error(`This function should not be invoked. It should be used to tag template literals that will be
+    transcompiled into graphql-js-client's query builder syntax.`);
 }
