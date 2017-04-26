@@ -23,31 +23,43 @@ $ yarn add babel-plugin-graphql-js-client-transform
 }
 ```
 
-By default, the plugin will search for the tag `gql`. This value is configurable by passing in a `tag` option to the plugin.
-
-```
-{
-  "plugins": [
-    ["graphql-js-client-transform", {"tag": "customTag"}]
-  ]
-}
-```
-
 ## Usage
 
-Simply tag your raw GraphQL queries and the plugin will transform them. An instance of
-[Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client)
+```js
+// Finds template literals tagged with gql
+import {gql} from 'babel-plugin-graphql-js-client-transform';
+
+// Finds template literals tagged with customTagName
+import {gql as customTagName} from 'babel-plugin-graphql-js-client-transform';
+```
+The plugin will pick up any template literals tagged with the imported `gql` function.
+Do not reassign the function to another variable after it has been imported.
+```js
+import {gql} from 'babel-plugin-graphql-js-client-transform';
+
+...
+
+const newTag = gql;
+
+newTag(client)`...`; // Don't do this. This template literal won't be transformed.
+```
+
+An instance of [Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client)
 must be supplied to the tag.
 
 ## Examples
 
-The following are example usages with the default variable name.
+The following are example usages.
 
 #### Example 1
 Convert a simple query.
 
 ##### Source Code
 ``` js
+import {gql} from 'babel-plugin-graphql-js-client-transform';
+
+...
+
 client.send(gql(client)`
   query {
     shop {
@@ -59,6 +71,10 @@ client.send(gql(client)`
 
 ##### Transformed Code
 ```js
+import {gql} from 'babel-plugin-graphql-js-client-transform';
+
+...
+
 const _document = client.document(); // Creates a document to store the query
 _document.addQuery((root) => {
   root.add('shop', (shop) => {
@@ -75,6 +91,10 @@ The query can also be stored inside a variable instead of being sent directly.
 ##### Source Code
 
 ```js
+import {gql} from 'babel-plugin-graphql-js-client-transform';
+
+...
+
 const query = gql(client)`
   query {
     shop {
@@ -88,6 +108,10 @@ client.send(query);
 
 ##### Transformed Code
 ```js
+import {gql} from 'babel-plugin-graphql-js-client-transform';
+
+...
+
 const _document = client.document(); // Creates a document to store the query
 _document.addQuery((root) => {
   root.add('shop', (shop) => {
