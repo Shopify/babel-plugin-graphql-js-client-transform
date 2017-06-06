@@ -1,36 +1,27 @@
 import {parse} from 'graphql/language';
 import * as t from 'babel-types';
-import parseDocument from './parse-document';
+// import parseDocument from './parse-document';
+import documentToJSAst from 'graphql-to-js-client-builder/lib/document-to-js-ast';
 
 const templateElementVisitor = {
   TemplateElement(path) {
     const statementParentPath = path.getStatementParent();
-    const documentId = statementParentPath.scope.generateUidIdentifier('document');
+    const clientVar = this.clientId;
+    const documentVar = statementParentPath.scope.generateUidIdentifier('document');
+    const spreadsVar = statementParentPath.scope.generateUidIdentifier('spreads');
 
     // Create the document to be sent
-    statementParentPath.insertBefore(t.variableDeclaration(
-      'const',
-      [t.variableDeclarator(
-        documentId,
-        t.callExpression(
-          t.memberExpression(
-            this.clientId,
-            t.identifier('document')
-          ),
-          []
-        )
-      )]
-    ));
 
     // Parse the document into a GraphQL AST
     const document = parse(path.node.value.raw);
 
     // Convert the GraphQL AST into a list of Babel AST nodes of the query building
-    const babelAstNodes = parseDocument(document, documentId, statementParentPath.scope, this.clientId);
+    const jsAst = documentToJSAst(document, clientVar, documentVar, spreadsVar);
+    // const babelAstNodes = parseDocument(document, documentVar, statementParentPath.scope, this.clientId);
 
-    statementParentPath.insertBefore(babelAstNodes);
+    statementParentPath.insertBefore(jsAst);
 
-    this.parentPath.replaceWith(documentId);
+    this.parentPath.replaceWith(documentVar);
   }
 };
 
