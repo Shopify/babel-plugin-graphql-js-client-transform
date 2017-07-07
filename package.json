@@ -6,8 +6,7 @@
   "license": "MIT",
   "author": "Shopify Inc.",
   "dependencies": {
-    "babel-types": "6.24.1",
-    "graphql": "0.10.1"
+    "graphql-to-js-client-builder": "0.0.1"
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
