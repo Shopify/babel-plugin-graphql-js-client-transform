@@ -6,19 +6,17 @@
   "license": "MIT",
   "author": "Shopify Inc.",
   "dependencies": {
-    "babel-types": "6.23.0",
-    "graphql": "0.9.1"
+    "graphql-to-js-client-builder": "0.0.1"
   },
   "devDependencies": {
-    "babel": "6.5.2",
-    "babel-cli": "6.11.4",
-    "babel-core": "6.13.2",
+    "babel-cli": "6.24.1",
+    "babel-core": "6.24.1",
     "babel-plugin-add-shopify-header": "1.0.5",
-    "babel-preset-shopify": "13.0.0",
-    "babel-register": "6.11.6",
+    "babel-preset-shopify": "16.0.2",
+    "babel-register": "6.24.1",
     "eslint": "3.3.1",
     "eslint-plugin-shopify": "14.0.0",
-    "mocha": "3.0.2"
+    "mocha": "3.4.2"
   },
   "scripts": {
     "test": "yarn run lint && yarn run mocha",

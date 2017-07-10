@@ -20,7 +20,7 @@ suite('tag-test', () => {
         root.add('shop', shop => {
           shop.add('name');
         });
-      })
+      });
 
       _document;`)
     );
@@ -38,7 +38,7 @@ suite('tag-test', () => {
         root.add('shop', shop => {
           shop.add('name');
         });
-      })
+      });
 
       _document;`)
     );
@@ -57,7 +57,7 @@ suite('tag-test', () => {
           root.add('shop', shop => {
             shop.add('name');
           });
-        })
+        });
 
         _document;
       }`)
