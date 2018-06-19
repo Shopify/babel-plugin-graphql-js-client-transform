@@ -1,3 +1,5 @@
+[![Travis](https://travis-ci.com/Shopify/babel-plugin-graphql-js-client-transform.svg?branch=master)](https://travis-ci.com/Shopify/babel-plugin-graphql-js-client-transform)
+
 # babel-plugin-graphql-js-client-transform
 
 This Babel plugin will transform any tagged raw GraphQL query to [Shopify/graphql-js-client](https://github.com/Shopify/graphql-js-client) query builder syntax.
